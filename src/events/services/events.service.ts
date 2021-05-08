@@ -26,3 +26,9 @@ export interface EventsService {
    */
   removeEvent(id: string): Promise<void>;
 }
+
+export class EventNotFound extends Error {
+  constructor(message = 'Event has been not found') {
+    super(message);
+  }
+}
