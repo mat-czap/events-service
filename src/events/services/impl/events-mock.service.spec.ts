@@ -24,7 +24,7 @@ describe('EventsMockService', () => {
       expect(typeof eventsService.getEvent).toBe('function');
     });
 
-    it(`when the event's id exists`, async () => {
+    it(`should return event when the event's id exists`, async () => {
       const expected: Event = {
         id: '25ac2e05-b1e8-47b4-b46c-c0bd7004bfa9',
         title: 'Exceptional Group',
@@ -37,7 +37,7 @@ describe('EventsMockService', () => {
       expect(result).toMatchObject(expected);
     });
 
-    it(`throw Error when event's id not found`, async () => {
+    it(`should throw Error when event's id not found`, async () => {
       const nonExistingId = '25ac2e05-b1e8-47b4-b46c-to-nie-moze-dzialac';
 
       expect.assertions(2);
@@ -63,6 +63,11 @@ describe('EventsMockService', () => {
     it('is defined of type function', () => {
       expect(eventsService.removeEvent).toBeDefined();
       expect(typeof eventsService.removeEvent).toBe('function');
+    });
+
+    it('should remove project if id exists', () => {
+      const id = '25ac2e05-b1e8-47b4-b46c-c0bd7004bfa9';
+      expect(eventsService.removeEvent(id)).toBeTruthy();
     });
   });
 });
