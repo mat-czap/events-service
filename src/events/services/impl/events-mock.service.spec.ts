@@ -65,9 +65,24 @@ describe('EventsMockService', () => {
       expect(typeof eventsService.removeEvent).toBe('function');
     });
 
-    it('should remove project if id exists', () => {
+    it('should remove project if id exists', async () => {
       const id = '25ac2e05-b1e8-47b4-b46c-c0bd7004bfa9';
-      expect(eventsService.removeEvent(id)).toBeTruthy();
+
+      expect(await eventsService.removeEvent(id)).toBe(undefined);
+    });
+
+    it(`should throw Error when event's id not found`, async () => {
+      const nonExistingId = '25ac2e05-b1e8-47b4-b46c-to-nie-moze-dzialac';
+
+      expect.assertions(2);
+
+      try {
+        await eventsService.getEvent(nonExistingId);
+      } catch (error) {
+        expect(error).toBeInstanceOf(EventNotFound);
+
+        expect(error).toHaveProperty('message', 'Event has been not found');
+      }
     });
   });
 });
