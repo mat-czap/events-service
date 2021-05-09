@@ -1,7 +1,6 @@
 # compiled output
 /dist
 /node_modules
-
 # Logs
 logs
 *.log
@@ -39,3 +38,5 @@ lerna-debug.log*
 # Ready scripts
 data-generator.js
 *.final.spec.ts
+
+README.md

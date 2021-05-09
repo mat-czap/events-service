@@ -29,6 +29,7 @@ describe('EventsMockService', () => {
       };
 
       const result: Event = await eventsService.createEvent(dateFrom, dateTo, title);
+
       expect(result).toEqual(expect.objectContaining(expected));
     });
 
@@ -65,6 +66,7 @@ describe('EventsMockService', () => {
       };
 
       const result: Event = await eventsService.createEvent(dateFrom, dateTo, title);
+
       expect(result).toEqual(expect.objectContaining(expected));
     });
   });
@@ -185,6 +187,51 @@ describe('EventsMockService', () => {
       const result = await eventsService.getEvents(startDate, endData, 1, 1);
       expect(result).toMatchObject(exprectedResult);
     });
+
+    it('should return 5 random events based on startDate, endData', async () => {
+      const numberEvents = 5;
+
+      const randomNumberInRange = (minimum: number, maximum: number) =>
+        Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+
+      const randomNumber = randomNumberInRange(0, EventsMockData.length);
+      const correctedRandomNumber = randomNumber - numberEvents;
+
+      const expectedEvents = EventsMockData.slice(correctedRandomNumber, correctedRandomNumber + numberEvents);
+
+      const startData = expectedEvents[0].startDate;
+      const endData = expectedEvents[expectedEvents.length - 1].startDate;
+
+      const result = await eventsService.getEvents(startData, endData, 0, 0);
+      expect(result.totalCount).toEqual(5);
+      expect(result.events).toEqual(expectedEvents);
+    });
+
+    it('should return empty array because the offset is equal to found events', async () => {
+      const expectedEventsNum = 0;
+      const expectedEvents = [];
+
+      const exprectedResult = { totalCount: expectedEventsNum, events: expectedEvents };
+
+      const startDate = '2020-01-01T09:00:00.000Z';
+      const endData = '2020-01-01T11:00:00.000Z';
+
+      const result = await eventsService.getEvents(startDate, endData, 1, 0);
+      expect(result).toMatchObject(exprectedResult);
+    });
+
+    it('should return empty array because the offset is bigger than found events', async () => {
+      const expectedEventsNum = 0;
+      const expectedEvents = [];
+
+      const exprectedResult = { totalCount: expectedEventsNum, events: expectedEvents };
+
+      const startDate = '2020-01-01T09:00:00.000Z';
+      const endData = '2020-01-01T11:00:00.000Z';
+
+      const result = await eventsService.getEvents(startDate, endData, 5, 0);
+      expect(result).toMatchObject(exprectedResult);
+    });
   });
 
   describe('removeEvent()', () => {
@@ -193,7 +240,7 @@ describe('EventsMockService', () => {
       expect(typeof eventsService.removeEvent).toBe('function');
     });
 
-    it('should remove project if id exists', async () => {
+    it('should remove event if its id exists', async () => {
       const id = '25ac2e05-b1e8-47b4-b46c-c0bd7004bfa9';
 
       expect(await eventsService.removeEvent(id)).toBe(undefined);
