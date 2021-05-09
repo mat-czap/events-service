@@ -1,4 +1,4 @@
-import { EventNotFound } from './../events.service';
+import { EventNotFound, ConflictError } from './../events.service';
 import { EventsService } from '../events.service';
 import { EventsMockService } from './events-mock.service';
 import { EventsMockData } from '../../mock-data/event';
@@ -15,6 +15,55 @@ describe('EventsMockService', () => {
     it('is defined of type function', () => {
       expect(eventsService.createEvent).toBeDefined();
       expect(typeof eventsService.createEvent).toBe('function');
+    });
+
+    it('should create and return event', async () => {
+      const dateFrom = '2020-01-01T06:00:00.000Z';
+      const dateTo = '2020-01-01T08:00:00.000Z';
+      const title = 'Superb Celebration';
+
+      const expected = {
+        startDate: dateFrom,
+        endDate: dateTo,
+        title,
+      };
+
+      const result: Event = await eventsService.createEvent(dateFrom, dateTo, title);
+      expect(result).toEqual(expect.objectContaining(expected));
+    });
+
+    it('should throw error because of collision with different event', async () => {
+      const dateFrom = '2020-01-01T09:00:00.000Z';
+      const dateTo = '2020-01-01T11:00:00.000Z';
+      const title = 'Superb Celebration';
+
+      expect.assertions(2);
+
+      try {
+        await eventsService.createEvent(dateFrom, dateTo, title);
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictError);
+
+        expect(error).toHaveProperty(
+          'message',
+          'Event is not possible to be established because of collision with another',
+        );
+      }
+    });
+
+    it('should create event even if start time is exactly the same as endtime of different event', async () => {
+      const dateFrom = '2020-01-01T11:00:00.000Z';
+      const dateTo = '2020-01-01T11:59:00.000Z';
+      const title = 'Superb Celebration';
+
+      const expected = {
+        startDate: dateFrom,
+        endDate: dateTo,
+        title,
+      };
+
+      const result: Event = await eventsService.createEvent(dateFrom, dateTo, title);
+      expect(result).toEqual(expect.objectContaining(expected));
     });
   });
 
