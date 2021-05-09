@@ -37,6 +37,8 @@ describe('EventsMockService', () => {
       const dateTo = '2020-01-01T11:00:00.000Z';
       const title = 'Superb Celebration';
 
+      const collisionId = '25ac2e05-b1e8-47b4-b46c-c0bd7004bfa9';
+
       expect.assertions(2);
 
       try {
@@ -46,7 +48,7 @@ describe('EventsMockService', () => {
 
         expect(error).toHaveProperty(
           'message',
-          'Event is not possible to be established because of collision with another',
+          `Event is not possible to be established because of collision with EVENT_ID: ${collisionId}`,
         );
       }
     });

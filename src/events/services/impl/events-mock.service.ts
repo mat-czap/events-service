@@ -1,6 +1,7 @@
-import { EventNotFound } from './../events.service';
+import { EventNotFound, ConflictError } from './../events.service';
 import { EventsService } from '../events.service';
 import { Event } from '../../models/event';
+import { v4 as uuidv4 } from 'uuid';
 
 type getEventsResult = { totalCount: number; events: Event[] };
 
@@ -9,8 +10,26 @@ export class EventsMockService implements EventsService {
   constructor(private _events: Event[]) {}
 
   createEvent(dateFrom: string, dateTo: string, title: string): Promise<Event> {
-    // @ts-ignore
-    return Promise.resolve({}); // todo: implement method
+    const [start, end] = [dateFrom, dateTo].map((date) => new Date(date));
+
+    const validateDate = (event: Event) => {
+      const correct =
+        new Date(event.startDate) > end || (new Date(event.startDate) < start && new Date(event.endDate) <= start);
+      if (!correct) throw new ConflictError(event.id);
+    };
+
+    for (const event of this._events) {
+      validateDate(event);
+    }
+
+    const event: Event = {
+      id: uuidv4(),
+      title,
+      startDate: dateFrom,
+      endDate: dateTo,
+    };
+
+    return Promise.resolve(event);
   }
 
   getEvent(id: string): Promise<Event> {

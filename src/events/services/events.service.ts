@@ -32,3 +32,10 @@ export class EventNotFound extends Error {
     super(message);
   }
 }
+
+export class ConflictError extends Error {
+  constructor(message: string) {
+    message = `Event is not possible to be established because of collision with EVENT_ID: ${message}`;
+    super(message);
+  }
+}
